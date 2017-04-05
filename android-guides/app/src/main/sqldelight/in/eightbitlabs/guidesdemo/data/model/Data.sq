@@ -1,0 +1,20 @@
+CREATE TABLE data (
+    _id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    startDate TEXT NOT NULL,
+    endDate TEXT NOT NULL,
+    objType TEXT NOT NULL,
+    url TEXT NOT NULL,
+    icon TEXT NOT NULL,
+    loginRequired TEXT NOT NULL,
+    in_cart INTEGER NOT NULL DEFAULT 0
+);
+
+select_all:
+SELECT *
+FROM data;
+
+select_by_cart:
+SELECT *
+FROM data
+WHERE in_cart = 1;

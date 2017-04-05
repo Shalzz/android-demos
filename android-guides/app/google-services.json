@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "838003055542",
+    "project_id": "guides-demo"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:838003055542:android:ae1b57586a8c5a9a",
+        "android_client_info": {
+          "package_name": "in.eightbitlabs.guidesdemo.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "838003055542-8d994g5u9ev88tgbhvp2rtgrsa1onpfs.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "838003055542-86rg5vtfv44mltnb488t9jcne7eeberf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "in.eightbitlabs.guidesdemo.debug",
+            "certificate_hash": "1435dd88be3ab08d17b2efe65aa80b971838e2fc"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAlxyk_5mo6dK2_d1Ozbj4lf_1Rhh7WTOM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
