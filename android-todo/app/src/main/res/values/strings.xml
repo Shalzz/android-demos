@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">TODO List</string>
+
+    <string name="action_add">Add Task</string>
+
+    <string name="dialog_action_ok">OK</string>
+    <string name="dialog_action_cancel">Cancel</string>
+    <string name="dialog_error_title">Sorry</string>
+
+    <string name="empty_tasks">There aren\'t any tasks</string>
+    <string name="error_loading_tasks">There was a problem loading the tasks</string>
+</resources>
