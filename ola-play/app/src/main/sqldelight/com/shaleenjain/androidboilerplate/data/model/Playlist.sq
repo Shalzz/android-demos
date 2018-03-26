@@ -10,8 +10,3 @@ select_by_id:
 SELECT *
 FROM playlist
 WHERE id = ?;
-
-update_playlist:
-UPDATE playlist
-SET mediaids = ?
-WHERE id = ?;

@@ -22,24 +22,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
-import io.reactivex.Scheduler;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static com.shaleenjain.ola.play.utils.MediaIDHelper.MEDIA_ID_ALL;
 import static com.shaleenjain.ola.play.utils.MediaIDHelper.MEDIA_ID_MUSICS_BY_GENRE;
-import static com.shaleenjain.ola.play.utils.MediaIDHelper.MEDIA_ID_PLAYLIST;
 import static com.shaleenjain.ola.play.utils.MediaIDHelper.MEDIA_ID_ROOT;
 import static com.shaleenjain.ola.play.utils.MediaIDHelper.createMediaID;
 
@@ -56,7 +49,6 @@ public class MusicProvider {
 
     // Categorized caches for music track data:
     private final ConcurrentMap<String, MutableMediaMetadata> mMusicListById;
-    private List<MediaBrowserCompat.MediaItem> Myplaylist = new ArrayList<>();
 
     private final Set<String> mFavoriteTracks;
 
@@ -207,17 +199,6 @@ public class MusicProvider {
         return mFavoriteTracks.contains(musicId);
     }
 
-    private MediaMetadataCompat createMetaDataFromTrack(Track track) {
-        MediaMetadataCompat item = new MediaMetadataCompat.Builder()
-                .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, track.id())
-                .putString(MusicProviderSource.CUSTOM_METADATA_TRACK_SOURCE, track.url())
-                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, track.artists())
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, track.cover_image())
-                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, track.song())
-                .build();
-        return item;
-    }
-
     /**
      * Get the list of music tracks from a server and caches the track information
      * for future reference, keying tracks by musicId and grouping by genre.
@@ -245,7 +226,13 @@ public class MusicProvider {
 
                     @Override
                     public void onNext(@NonNull Track track) {
-                        MediaMetadataCompat item = createMetaDataFromTrack(track);
+                        MediaMetadataCompat item = new MediaMetadataCompat.Builder()
+                                .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, track.id())
+                                .putString(MusicProviderSource.CUSTOM_METADATA_TRACK_SOURCE, track.url())
+                                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, track.artists())
+                                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, track.cover_image())
+                                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, track.song())
+                                .build();
 
                         mMusicListById.put(track.id(), new MutableMediaMetadata(track.id(), item));
                     }
@@ -277,19 +264,13 @@ public class MusicProvider {
             return mediaItems;
         }
 
-        Timber.i("Childern %s", mediaId);
-
         if (MEDIA_ID_ALL.equals(mediaId)) {
             for (MediaMetadataCompat metadata : getMusicList() ) {
                 mediaItems.add(createMediaItem(metadata , MEDIA_ID_ALL));
             }
 
-        } else if (MEDIA_ID_PLAYLIST.equals(mediaId)) {
-            return getPlaylist();
-        }
-        else if (MEDIA_ID_ROOT.equals(mediaId)) {
+        } else if (MEDIA_ID_ROOT.equals(mediaId)) {
             mediaItems.add(createBrowsableMediaItemForRoot(resources));
-            mediaItems.add(createBrowsablePlaylistMediaItemForRoot(resources));
 
         } else {
             LogHelper.w(TAG, "Skipping unmatched mediaId: ", mediaId);
@@ -297,64 +278,11 @@ public class MusicProvider {
         return mediaItems;
     }
 
-    private List<MediaBrowserCompat.MediaItem> getPlaylist() {
-        Timber.i("Running ?");
-        mDataManager.getPlaylist()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Playlist>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(Playlist playlist) {
-                        Timber.i("Running ?");
-                        for (String id : playlist.mediaids()) {
-                            if (id == null) break;
-                            mDataManager.getTrack(id)
-                                    .subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(track -> {
-
-                                        Timber.i("Running : %s", track.id());
-                                        MediaMetadataCompat meta = createMetaDataFromTrack(track);
-                                        Myplaylist.add(createMediaItem(meta, MEDIA_ID_PLAYLIST));
-                                    });
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-        return Myplaylist;
-    }
-
     private MediaBrowserCompat.MediaItem createBrowsableMediaItemForRoot(Resources resources) {
         MediaDescriptionCompat description = new MediaDescriptionCompat.Builder()
-                .setMediaId(MEDIA_ID_ALL)
-                .setTitle("All songs")
-                .setSubtitle("Songs by Title")
-                .setIconUri(Uri.parse("android.resource://" +
-                        "com.shaleenjain.ola.play/drawable/ic_by_genre"))
-                .build();
-        return new MediaBrowserCompat.MediaItem(description,
-                MediaBrowserCompat.MediaItem.FLAG_BROWSABLE);
-    }
-
-    private MediaBrowserCompat.MediaItem createBrowsablePlaylistMediaItemForRoot(Resources
-                                                                                       resources) {
-        MediaDescriptionCompat description = new MediaDescriptionCompat.Builder()
-                .setMediaId(MEDIA_ID_PLAYLIST)
-                .setTitle("Playlist")
+                .setMediaId(MEDIA_ID_MUSICS_BY_GENRE)
+                .setTitle(resources.getString(R.string.browse_genres))
+                .setSubtitle(resources.getString(R.string.browse_genre_subtitle))
                 .setIconUri(Uri.parse("android.resource://" +
                         "com.shaleenjain.ola.play/drawable/ic_by_genre"))
                 .build();
@@ -383,16 +311,13 @@ public class MusicProvider {
 
         String hierarchyAwareMediaID = null;
 
-        if (Objects.equals(MEDIA_ID, MEDIA_ID_MUSICS_BY_GENRE)) {
+        if ( MEDIA_ID == MEDIA_ID_MUSICS_BY_GENRE ) {
             String genre = metadata.getString(MediaMetadataCompat.METADATA_KEY_GENRE);
             hierarchyAwareMediaID = MediaIDHelper.createMediaID(
                     metadata.getDescription().getMediaId(), MEDIA_ID, genre);
-        } else if(Objects.equals(MEDIA_ID, MEDIA_ID_ALL)) {
+        } else if( MEDIA_ID == MEDIA_ID_ALL ) {
             hierarchyAwareMediaID = MediaIDHelper.createMediaID(
                     metadata.getDescription().getMediaId(), MEDIA_ID, MEDIA_ID);
-        } else if(Objects.equals(MEDIA_ID, MEDIA_ID_PLAYLIST)) {
-            hierarchyAwareMediaID = MediaIDHelper.createMediaID(
-                    metadata.getDescription().getMediaId(), MEDIA_ID, "0");
         }
 
         MediaMetadataCompat copy = new MediaMetadataCompat.Builder(metadata)

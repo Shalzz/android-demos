@@ -390,9 +390,6 @@ public class MediaBrowserFragment extends Fragment {
                                 }
                             });
                     return true;
-                case R.id.menu_playlist:
-                    mDataManager.addToPlaylist(mPopUpMenuItem);
-                    return true;
                 default:
                     return false;
             }

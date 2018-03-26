@@ -17,8 +17,6 @@ import java.util.List;
 @AutoValue
 public abstract class Playlist  implements PlaylistModel {
 
-    Playlist.Update_playlist updatePlaylist;
-
     private static final ColumnAdapter<List<String>, String> LIST_ADAPTER = new
             ColumnAdapter<List<String>, String>() {
         @NonNull

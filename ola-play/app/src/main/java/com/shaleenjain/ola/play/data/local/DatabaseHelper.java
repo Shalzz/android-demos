@@ -3,8 +3,6 @@ package com.shaleenjain.ola.play.data.local;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.VisibleForTesting;
 
-import com.shaleenjain.androidboilerplate.data.model.PlaylistModel;
-import com.shaleenjain.ola.play.data.model.Playlist;
 import com.shaleenjain.ola.play.data.model.Track;
 import com.squareup.sqlbrite2.BriteDatabase;
 import com.squareup.sqlbrite2.SqlBrite;
@@ -20,10 +18,7 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Scheduler;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
 @Singleton
 public class DatabaseHelper {
@@ -88,27 +83,5 @@ public class DatabaseHelper {
                 stm.statement,
                 stm.args)
                 .mapToOne(Track.FACTORY.select_by_idMapper()::map);
-    }
-
-    public Observable<Playlist> getPlaylist() {
-        SqlDelightStatement stm = Playlist.FACTORY.select_by_id(0L);
-        return mDb.createQuery(stm.tables,
-                stm.statement,
-                stm.args)
-                .mapToOne(Playlist.FACTORY.select_by_idMapper()::map);
-    }
-
-    public void addToPlaylist(String mediaId) {
-        getPlaylist().subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(playlist -> {
-
-                    Timber.d("Running !!!! %s", mediaId);
-                    List<String> list = playlist.mediaids();
-                    list.add(mediaId);
-                    PlaylistModel.Update_playlist newPlaylist = new PlaylistModel.Update_playlist(mDb
-                            .getWritableDatabase(), Playlist.FACTORY);
-                    newPlaylist.bind(list, 0L);
-                });
     }
 }

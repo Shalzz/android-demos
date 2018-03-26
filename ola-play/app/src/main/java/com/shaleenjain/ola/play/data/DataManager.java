@@ -3,7 +3,6 @@ package com.shaleenjain.ola.play.data;
 
 import com.shaleenjain.ola.play.data.local.DatabaseHelper;
 import com.shaleenjain.ola.play.data.local.PreferencesHelper;
-import com.shaleenjain.ola.play.data.model.Playlist;
 import com.shaleenjain.ola.play.data.model.Track;
 import com.shaleenjain.ola.play.data.remote.APIService;
 
@@ -57,13 +56,5 @@ public class DataManager {
 
     public Observable<Track> getTrack(String mediaid) {
         return mDatabaseHelper.getTrack(mediaid);
-    }
-
-    public Observable<Playlist> getPlaylist() {
-        return mDatabaseHelper.getPlaylist();
-    }
-
-    public void addToPlaylist(String id) {
-        mDatabaseHelper.addToPlaylist(id);
     }
 }
