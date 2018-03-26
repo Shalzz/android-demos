@@ -1,0 +1,23 @@
+import java.util.List;
+
+CREATE TABLE Tracks (
+  id TEXT NOT NULL PRIMARY KEY,
+  song TEXT NOT NULL,
+  url TEXT  NOT NULL,
+  artists TEXT  NOT NULL,
+  cover_image TEXT NOT NULL
+);
+
+selectALL:
+SELECT *
+FROM Tracks;
+
+select_by_id:
+SELECT *
+FROM Tracks
+WHERE id = ?;
+
+select_like_name:
+SELECT *
+FROM Tracks
+WHERE song LIKE ? ;

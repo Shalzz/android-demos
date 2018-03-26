@@ -1,0 +1,17 @@
+import java.util.List;
+
+CREATE TABLE playlist (
+    id INTEGER PRIMARY KEY,
+    name TEXT,
+    mediaids TEXT AS List<String>
+);
+
+select_by_id:
+SELECT *
+FROM playlist
+WHERE id = ?;
+
+update_playlist:
+UPDATE playlist
+SET mediaids = ?
+WHERE id = ?;
